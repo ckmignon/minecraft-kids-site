@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOON &amp; YOON의 마크 비밀기지 ⛏️</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+KR:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #7CB342;
+    --brown: #8B5A2B;
+    --gray: #9E9E9E;
+    --cyan: #5DDFDF;
+    --red: #D32F2F;
+    --cream: #FFF8E7;
+    --black: #1a1a1a;
+  }
+
+  body {
+    background-color: var(--cream);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--black);
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--green);
+    border-bottom: 3px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 0 8px;
+    height: 56px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+
+  nav button {
+    flex: 1;
+    min-width: 80px;
+    max-width: 160px;
+    height: 44px;
+    background: #5a8a2a;
+    color: #fff;
+    border: 2px solid #000;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 #000;
+    transition: transform 0.1s, background 0.1s;
+    white-space: nowrap;
+    padding: 0 8px;
+  }
+  nav button:hover { transform: translateY(-2px); background: #4a7a1a; }
+  nav button.active {
+    background: var(--cyan);
+    color: #000;
+    box-shadow: 2px 2px 0 #000;
+  }
+
+  /* MAIN */
+  main {
+    margin-top: 56px;
+  }
+
+  /* SECTIONS */
+  section { display: none; }
+  section.visible { display: block; }
+
+  /* HERO HEADER */
+  .hero {
+    background:
+      linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)),
+      url('https://source.unsplash.com/1600x600/?minecraft,landscape') center/cover no-repeat;
+    background-color: #4a7a2a;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    border-bottom: 4px solid #000;
+  }
+  .hero h1 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(16px, 4vw, 32px);
+    color: var(--cyan);
+    text-shadow: 3px 3px 0 #000;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .hero p {
+    font-size: 20px;
+    color: #fff;
+    text-shadow: 1px 1px 0 #000;
+    font-weight: 700;
+  }
+
+  /* CONTAINERS */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 20px;
+  }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(14px, 3vw, 22px);
+    color: var(--brown);
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.15);
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+
+  /* CARD */
+  .card {
+    background: #fff;
+    border: 3px solid #000;
+    border-radius: 4px;
+    padding: 24px;
+    box-shadow: 4px 4px 0 #000;
+    transition: transform 0.2s;
+  }
+  .card:hover { transform: translateY(-4px); }
+  .card-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 12px;
+    line-height: 1;
+  }
+  .card h3 {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+    margin-bottom: 12px;
+    color: var(--black);
+  }
+  .card ul, .card ol {
+    padding-left: 20px;
+  }
+  .card li {
+    margin-bottom: 6px;
+    font-size: 17px;
+  }
+  .card .author {
+    margin-top: 14px;
+    font-size: 15px;
+    color: #666;
+    font-weight: 700;
+  }
+
+  /* GRID */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  @media (min-width: 640px) {
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* HOME — WELCOME BOX */
+  .welcome-box {
+    background: var(--green);
+    border: 3px solid #000;
+    border-radius: 4px;
+    box-shadow: 4px 4px 0 #000;
+    padding: 28px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 28px;
+  }
+  .welcome-box h2 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(13px, 2.5vw, 18px);
+    margin-bottom: 16px;
+    line-height: 1.7;
+    text-shadow: 2px 2px 0 #000;
+  }
+  .welcome-box ul {
+    padding-left: 24px;
+    margin: 10px 0;
+  }
+  .welcome-box li { margin-bottom: 8px; }
+  .welcome-box .highlight {
+    margin-top: 16px;
+    background: var(--cyan);
+    color: #000;
+    display: inline-block;
+    padding: 8px 16px;
+    border: 2px solid #000;
+    box-shadow: 3px 3px 0 #000;
+    font-weight: 900;
+    font-size: 17px;
+    border-radius: 2px;
+  }
+
+  /* MISSION BOX */
+  .mission-box {
+    background: #FFF3CD;
+    border: 3px solid #000;
+    border-radius: 4px;
+    box-shadow: 4px 4px 0 #000;
+    padding: 24px;
+    margin-bottom: 28px;
+  }
+  .mission-box h3 {
+    font-weight: 900;
+    font-size: 20px;
+    margin-bottom: 14px;
+  }
+  .mission-box ol {
+    padding-left: 24px;
+  }
+  .mission-box li { margin-bottom: 8px; font-size: 18px; }
+
+  /* MENU BUTTONS */
+  .menu-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  @media (min-width: 480px) {
+    .menu-grid { grid-template-columns: 1fr 1fr 1fr; }
+  }
+  .menu-btn {
+    background: var(--gray);
+    color: #000;
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0 #000;
+    padding: 18px 12px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 900;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: transform 0.15s, background 0.15s;
+    text-align: center;
+  }
+  .menu-btn:hover { transform: translateY(-4px); background: #bbb; }
+
+  /* TIP CARDS */
+  .card-sky    { background: #E3F2FD; }
+  .card-lime   { background: #F1F8E9; }
+  .card-orange { background: #FFF3E0; }
+  .card-red    { background: #FFEBEE; }
+  .card-brown  { background: #EFEBE9; }
+  .card-purple { background: #F3E5F5; }
+
+  /* GALLERY */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+  @media (min-width: 640px) {
+    .gallery-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 900px) {
+    .gallery-grid { grid-template-columns: 1fr 1fr 1fr; }
+  }
+
+  .gallery-item {
+    border: 3px solid #000;
+    border-radius: 4px;
+    box-shadow: 4px 4px 0 #000;
+    overflow: hidden;
+    background: #ddd;
+    transition: transform 0.2s;
+    cursor: pointer;
+  }
+  .gallery-item:hover { transform: translateY(-4px); }
+  .gallery-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+  }
+  .gallery-caption {
+    padding: 12px 14px;
+    font-weight: 700;
+    font-size: 16px;
+    background: #fff;
+    border-top: 2px solid #000;
+  }
+
+  /* GALLERY HEADER */
+  .gallery-header {
+    background: var(--cyan);
+    border: 3px solid #000;
+    border-radius: 4px;
+    box-shadow: 4px 4px 0 #000;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    font-weight: 700;
+    font-size: 17px;
+  }
+  .gallery-header h2 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(12px, 2.5vw, 16px);
+    margin-bottom: 10px;
+    line-height: 1.7;
+  }
+
+  /* WISHLIST */
+  .wishlist {
+    background: #fff;
+    border: 3px solid #000;
+    border-radius: 4px;
+    box-shadow: 4px 4px 0 #000;
+    padding: 24px;
+  }
+  .wishlist h3 { font-weight: 900; font-size: 20px; margin-bottom: 14px; }
+  .wishlist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 17px;
+  }
+  .wishlist-item .chk {
+    width: 22px;
+    height: 22px;
+    border: 3px solid #000;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    background: #f5f5f5;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+  .wishlist-item .chk.done { background: var(--green); color: #fff; }
+
+  /* SERVER */
+  .server-card {
+    border: 3px solid #000;
+    border-radius: 4px;
+    box-shadow: 4px 4px 0 #000;
+    padding: 24px;
+    margin-bottom: 22px;
+  }
+  .server-card h3 { font-weight: 900; font-size: 20px; margin-bottom: 14px; }
+  .server-card li { margin-bottom: 8px; font-size: 17px; }
+  .server-green  { background: #E8F5E9; }
+  .server-blue   { background: #E3F2FD; }
+  .server-danger { background: #FFEBEE; border-color: var(--red); }
+  .server-danger h3 { color: var(--red); }
+  .server-info-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 17px;
+    flex-wrap: wrap;
+  }
+  .server-info-row .label {
+    font-weight: 900;
+    min-width: 80px;
+  }
+  .server-ip {
+    font-family: monospace;
+    background: #000;
+    color: var(--cyan);
+    padding: 2px 10px;
+    border-radius: 2px;
+    font-size: 16px;
+    letter-spacing: 1px;
+  }
+  .sos-box {
+    background: #FFF3CD;
+    border: 3px solid #000;
+    border-radius: 4px;
+    box-shadow: 4px 4px 0 #000;
+    padding: 20px 24px;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  /* LIGHTBOX */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox-inner {
+    position: relative;
+    max-width: 860px;
+    width: 100%;
+  }
+  .lightbox-inner img {
+    width: 100%;
+    border: 4px solid #fff;
+    border-radius: 4px;
+    display: block;
+  }
+  .lightbox-caption {
+    color: #fff;
+    text-align: center;
+    padding: 12px 0 0;
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .lightbox-close {
+    position: absolute;
+    top: -16px;
+    right: -16px;
+    width: 40px;
+    height: 40px;
+    background: var(--red);
+    color: #fff;
+    border: 3px solid #000;
+    font-size: 20px;
+    font-weight: 900;
+    cursor: pointer;
+    border-radius: 2px;
+    box-shadow: 3px 3px 0 #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 28px 20px;
+    font-size: 15px;
+    color: #888;
+    border-top: 3px solid #ccc;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <button class="active" data-tab="home" onclick="switchTab('home')">🏠 홈</button>
+  <button data-tab="tips" onclick="switchTab('tips')">💡 건축 팁</button>
+  <button data-tab="gallery" onclick="switchTab('gallery')">📸 갤러리</button>
+  <button data-tab="server" onclick="switchTab('server')">🌐 서버 정보</button>
+</nav>
+
+<main>
+
+  <!-- ===== 홈 ===== -->
+  <section id="home" class="visible">
+    <div class="hero">
+      <h1>HOON &amp; YOON의<br>마크 비밀기지 ⛏️</h1>
+      <p>형제가 같이 짓는 우리만의 세계</p>
+    </div>
+    <div class="container">
+      <div class="welcome-box">
+        <h2>👋 어서 와, HOON · YOON 비밀기지에!</h2>
+        <p>여긴 HOON이랑 YOON이 마크 하면서</p>
+        <ul>
+          <li>발견한 꿀팁</li>
+          <li>자랑하고 싶은 건축물</li>
+          <li>우리 서버 들어오는 법</li>
+        </ul>
+        <p style="margin-top:10px;">을 모아두는 곳이야.</p>
+        <div class="highlight">🎮 매주 일요일 저녁 8시는 가족 마크 타임!</div>
+      </div>
+
+      <div class="mission-box">
+        <h3>🎯 이번 주 같이 할 거</h3>
+        <ol>
+          <li>마을 도서관 짓기 📚</li>
+          <li>네더 포탈 옮기기 🔥</li>
+          <li>양 농장 30마리까지 키우기 🐑</li>
+        </ol>
+      </div>
+
+      <p class="section-title">어디 갈까?</p>
+      <div class="menu-grid">
+        <button class="menu-btn" onclick="switchTab('tips')">💡 팁 보러가기</button>
+        <button class="menu-btn" onclick="switchTab('gallery')">📸 갤러리 보기</button>
+        <button class="menu-btn" onclick="switchTab('server')">🌐 서버 들어오기</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 건축 팁 ===== -->
+  <section id="tips">
+    <div class="container">
+      <p class="section-title">💡 형제의 팁</p>
+      <div class="grid-2">
+
+        <div class="card card-sky">
+          <span class="card-icon">💎</span>
+          <h3>다이아 빨리 찾기</h3>
+          <ul>
+            <li>Y좌표 -54가 명당 (1.18 이후)</li>
+            <li>분기 채굴: 3칸 띄우고 일직선</li>
+            <li>용암 만나면 양동이로 물 부어 흑요석화</li>
+            <li>행운3 곡괭이 쓰면 최대 4배!</li>
+          </ul>
+          <p class="author">— HOON이 알려줌</p>
+        </div>
+
+        <div class="card card-lime">
+          <span class="card-icon">🧑‍🌾</span>
+          <h3>주민 거래 꿀팁</h3>
+          <ul>
+            <li>도서관 사서 = 수선 책 무조건 노려</li>
+            <li>거래 마음에 안들면 직업블록 부수고 다시</li>
+            <li>좀비주민 치료하면 가격 1/3로 할인</li>
+            <li>에메랄드 모으려면 농부 추천 🌾</li>
+          </ul>
+          <p class="author">— YOON이 발견</p>
+        </div>
+
+        <div class="card card-orange">
+          <span class="card-icon">🔥</span>
+          <h3>네더 안 죽고 다니기</h3>
+          <ul>
+            <li>화염 저항 포션 챙기기 (4분짜리)</li>
+            <li>침대 절대 X (폭발함!)</li>
+            <li>가스트 화염구는 검으로 쳐서 돌려보내기</li>
+            <li>피글린 앞에선 금 갑옷 1개라도 입기</li>
+          </ul>
+          <p class="author">— 둘 다 죽으면서 배움 😅</p>
+        </div>
+
+        <div class="card card-red">
+          <span class="card-icon">⚡</span>
+          <h3>레드스톤 입문 3가지</h3>
+          <ol>
+            <li>비교기 vs 중계기 차이 알기</li>
+            <li>옵저버는 "변화 감지" 센서</li>
+            <li>리피터(중계기) 우클릭 = 딜레이 조절</li>
+          </ol>
+          <p style="margin-top:12px; font-size:17px;">연습용: 자동문부터 만들어보자 🚪</p>
+        </div>
+
+        <div class="card card-brown">
+          <span class="card-icon">🏠</span>
+          <h3>건축 잘하는 비결</h3>
+          <ul>
+            <li>한 가지 색만 쓰지 말기 (계단/슬랩 섞기)</li>
+            <li>창문은 크게, 1칸은 답답해</li>
+            <li>지붕 각도는 1:1 또는 1:2</li>
+            <li>조명은 숨겨서 (천장 위에 글로우스톤)</li>
+          </ul>
+        </div>
+
+        <div class="card card-purple">
+          <span class="card-icon">🤝</span>
+          <h3>HOON &amp; YOON 규칙</h3>
+          <ol>
+            <li>상대 집은 허락 없이 부수지 않기</li>
+            <li>다이아 찾으면 반땅</li>
+            <li>죽으면 아이템 같이 회수하러 가기</li>
+            <li>싸우면 5분 쉬고 다시 만나기 (둘 다!)</li>
+          </ol>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 갤러리 ===== -->
+  <section id="gallery">
+    <div class="container">
+      <div class="gallery-header">
+        <h2>🏆 우리가 지은 것들</h2>
+        <p>여기에 스크린샷을 모아둘 거야.<br>F2 눌러서 찍은 거 부모님 폰으로 보내주면 올려줄게.</p>
+      </div>
+
+      <div class="gallery-grid">
+
+        <div class="gallery-item" onclick="openLightbox(this)">
+          <img
+            src="https://source.unsplash.com/600x400/?minecraft,castle"
+            onerror="this.src='https://via.placeholder.com/600x400/7CB342/FFFFFF?text=HOON의+성'"
+            alt="HOON이 지은 성"
+            data-caption="🏰 HOON이 지은 성 (작업중)"
+          >
+          <div class="gallery-caption">🏰 HOON이 지은 성 (작업중)</div>
+        </div>
+
+        <div class="gallery-item" onclick="openLightbox(this)">
+          <img
+            src="https://source.unsplash.com/600x400/?minecraft,house"
+            onerror="this.src='https://via.placeholder.com/600x400/8B5A2B/FFFFFF?text=YOON의+첫+집'"
+            alt="YOON의 첫 집"
+            data-caption="🏡 YOON의 첫 집"
+          >
+          <div class="gallery-caption">🏡 YOON의 첫 집</div>
+        </div>
+
+        <div class="gallery-item" onclick="openLightbox(this)">
+          <img
+            src="https://source.unsplash.com/600x400/?minecraft,treehouse"
+            onerror="this.src='https://via.placeholder.com/600x400/558B2F/FFFFFF?text=합작+트리하우스'"
+            alt="HOON + YOON 합작 트리하우스"
+            data-caption="🌳 HOON + YOON 합작 트리하우스"
+          >
+          <div class="gallery-caption">🌳 HOON + YOON 합작 트리하우스</div>
+        </div>
+
+        <div class="gallery-item" onclick="openLightbox(this)">
+          <img
+            src="https://source.unsplash.com/600x400/?minecraft,underwater"
+            onerror="this.src='https://via.placeholder.com/600x400/0277BD/FFFFFF?text=바다+비밀+연구소'"
+            alt="바다 비밀 연구소"
+            data-caption="🐠 바다 비밀 연구소"
+          >
+          <div class="gallery-caption">🐠 바다 비밀 연구소</div>
+        </div>
+
+        <div class="gallery-item" onclick="openLightbox(this)">
+          <img
+            src="https://source.unsplash.com/600x400/?minecraft,mountain"
+            onerror="this.src='https://via.placeholder.com/600x400/9E9E9E/FFFFFF?text=산+속+광산+기지'"
+            alt="산 속 광산 기지"
+            data-caption="⛰️ 산 속 광산 기지"
+          >
+          <div class="gallery-caption">⛰️ 산 속 광산 기지</div>
+        </div>
+
+      </div>
+
+      <div class="wishlist">
+        <h3>📋 위시리스트</h3>
+        <div class="wishlist-item">
+          <div class="chk" onclick="toggleCheck(this)"></div>
+          <span>거대 시계탑 (런던 빅벤 스타일)</span>
+        </div>
+        <div class="wishlist-item">
+          <div class="chk" onclick="toggleCheck(this)"></div>
+          <span>동물원 (모든 몹 1마리씩)</span>
+        </div>
+        <div class="wishlist-item">
+          <div class="chk" onclick="toggleCheck(this)"></div>
+          <span>롤러코스터 (마인카트 레일)</span>
+        </div>
+        <div class="wishlist-item">
+          <div class="chk" onclick="toggleCheck(this)"></div>
+          <span>비밀 통로 있는 도서관</span>
+        </div>
+        <div class="wishlist-item">
+          <div class="chk" onclick="toggleCheck(this)"></div>
+          <span>엔더드래곤 잡고 알 보관소 만들기</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 서버 정보 ===== -->
+  <section id="server">
+    <div class="container">
+      <p class="section-title">🌐 우리 서버</p>
+
+      <div class="server-card server-green">
+        <h3>🎮 가족 서버 접속 정보</h3>
+        <div class="server-info-row">
+          <span class="label">서버 주소</span>
+          <span class="server-ip">[여기에 실제 IP 입력]</span>
+        </div>
+        <div class="server-info-row">
+          <span class="label">버전</span>
+          <span>1.20.4 (자바 에디션)</span>
+        </div>
+        <div class="server-info-row">
+          <span class="label">모드</span>
+          <span>바닐라 + 약간의 데이터팩</span>
+        </div>
+        <div class="server-info-row">
+          <span class="label">⏰ 운영</span>
+          <span>매일 오후 4시 ~ 밤 9시<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(주말은 오전 10시부터)</span>
+        </div>
+      </div>
+
+      <div class="server-card server-blue">
+        <h3>🔌 접속하는 법</h3>
+        <ol style="padding-left:24px;">
+          <li>마인크래프트 자바 에디션 실행</li>
+          <li>멀티플레이 클릭</li>
+          <li>"서버 추가" 누르기</li>
+          <li>서버 이름: <strong>우리집</strong></li>
+          <li>서버 주소: (위에 적힌 주소)</li>
+          <li>완료 → 더블클릭으로 입장!</li>
+        </ol>
+      </div>
+
+      <div class="server-card server-danger">
+        <h3>📜 서버 규칙 (어기면 일주일 정지 😤)</h3>
+        <ul style="list-style:none; padding-left:0;">
+          <li style="margin-bottom:10px;">✅ 다른 사람 집 허락 없이 들어가기 X</li>
+          <li style="margin-bottom:10px;">✅ 욕설/비속어 채팅 X</li>
+          <li style="margin-bottom:10px;">✅ 아이템 훔치기 X</li>
+          <li style="margin-bottom:10px;">✅ TNT는 자기 땅에서만</li>
+          <li style="margin-bottom:10px;">✅ 부모님 부르면 즉시 일시정지</li>
+          <li>✅ 새 친구 초대하려면 아빠한테 먼저 말하기</li>
+        </ul>
+      </div>
+
+      <div class="sos-box">
+        <p>🆘 서버 안 들어가져요!<br>→ 아빠한테 카톡 <strong>"마크 서버 안돼"</strong></p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <div class="lightbox-inner">
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <img id="lightbox-img" src="" alt="">
+    <p class="lightbox-caption" id="lightbox-caption"></p>
+  </div>
+</div>
+
+<footer>
+  ⛏️ HOON &amp; YOON의 마크 비밀기지 · 2026 · 아빠가 만들어줌 ❤️
+</footer>
+
+<script>
+  const TABS = ['home','tips','gallery','server'];
+
+  function switchTab(id) {
+    TABS.forEach(t => {
+      document.getElementById(t).classList.toggle('visible', t === id);
+      document.querySelector('[data-tab="'+t+'"]').classList.toggle('active', t === id);
+    });
+    location.hash = id;
+    window.scrollTo(0, 0);
+  }
+
+  function openLightbox(el) {
+    const img = el.querySelector('img');
+    document.getElementById('lightbox-img').src = img.src;
+    document.getElementById('lightbox-caption').textContent = img.dataset.caption || '';
+    document.getElementById('lightbox').classList.add('open');
+  }
+
+  function closeLightbox(e) {
+    if (!e || e.target === document.getElementById('lightbox') || e.currentTarget.tagName === 'BUTTON') {
+      document.getElementById('lightbox').classList.remove('open');
+    }
+  }
+
+  function toggleCheck(el) {
+    el.classList.toggle('done');
+    el.textContent = el.classList.contains('done') ? '✓' : '';
+  }
+
+  // 해시 초기화
+  const hash = location.hash.replace('#','');
+  if (TABS.includes(hash)) switchTab(hash);
+</script>
+</body>
+</html>
